@@ -1,0 +1,110 @@
+name: Pages
+
+# Publishes this repository to https://mar-devl.github.io/subdesk-legal/
+#
+# The site exists separately from the app source for one reason: GitHub Pages
+# needs a public repository on the Free plan, and `mar-devl/subdesk` is not one
+# and should not become one — it carries the Firebase configuration and names
+# the admin account in its Firestore rules. The requirement was a public URL,
+# not a public app.
+#
+# ONE-TIME SETUP, and the workflow cannot do this part for you:
+#   Repository → Settings → Pages → Build and deployment → Source:
+#   **GitHub Actions**  (not "Deploy from a branch")
+# Without that, every run fails at the "Setup Pages" step with a 404.
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+# `pages: write` and `id-token: write` are what deploy-pages needs — the
+# deployment is authorised by an OIDC token rather than a PAT, which is why
+# `contents` stays read-only.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One live deployment at a time. `cancel-in-progress: false` on purpose: a
+# half-finished deployment that gets cancelled can leave the site serving the
+# previous build, and for a legal page that is the wrong failure.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy legal site
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Fail loudly here rather than serve a 404 to Google's reviewer.
+      #
+      # Every file below is referenced by the app, by the Play listing or by
+      # the AdMob consent message. A rename that misses one is invisible until
+      # a review is rejected days later.
+      - name: Check the required pages exist
+        run: |
+          missing=0
+          for f in \
+            index.html \
+            privacy.html \
+            data-deletion.html \
+            assets/subdesk.css \
+            assets/subdesk-icon.svg \
+            assets/subdesk-mark-paper.svg \
+            .nojekyll
+          do
+            if [ ! -f "$f" ]; then
+              echo "::error file=$f::required for the published site but missing"
+              missing=1
+            fi
+          done
+          exit $missing
+
+      # A dead link on a privacy policy is not cosmetic. The page is a set of
+      # promises, and the cheapest way to make a reader doubt all of them is
+      # one href that 404s. This catches the specific case that would happen
+      # here: a link left pointing at the private app repository.
+      - name: Check no link points at the private app repository
+        run: |
+          if grep -rn 'github\.com/mar-devl/subdesk\b' --include='*.html' .; then
+            echo "::error::a link points at mar-devl/subdesk, which is private and will 404"
+            exit 1
+          fi
+          echo "no links into the private repository"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Summary
+        run: |
+          {
+            echo "## Legal site deployed"
+            echo
+            echo "| Purpose | URL |"
+            echo "| --- | --- |"
+            echo "| Play listing · privacy policy | ${{ steps.deployment.outputs.page_url }}privacy.html |"
+            echo "| Play listing · data deletion | ${{ steps.deployment.outputs.page_url }}data-deletion.html |"
+            echo "| AdMob consent message | ${{ steps.deployment.outputs.page_url }}privacy.html |"
+            echo
+            echo "These three must match \`util/Legal.kt\` in the app repository."
+          } >> "$GITHUB_STEP_SUMMARY"

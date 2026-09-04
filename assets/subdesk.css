@@ -1,0 +1,422 @@
+/*
+ * SubDesk — legal site stylesheet.
+ *
+ * Tokens are lifted from SubDesk Brand Identity v1.0 and from
+ * design-system/subdesk/MASTER.md, not re-invented: Iris on warm Paper, Space
+ * Grotesk for display and numerals, Manrope for everything a person reads in
+ * sentences, 20px card radius, 1px hairline borders and no elevation.
+ *
+ * The one place this departs from the brand book is width. The identity
+ * document is a fixed 1440px presentation board; this is a legal page people
+ * will open on a phone from a Play Store listing or from inside the app, so
+ * the grid is fluid and the type scale steps down with the viewport.
+ */
+
+:root {
+  --iris: #5B3DF5;
+  --iris-pressed: #4A2EE0;
+  --iris-deep: #3E28B8;
+  --iris-light: #A897FF;
+
+  --ink: #12121A;
+  --graphite: #1C1C26;
+  --paper: #F6F5F2;
+  --paper-deep: #EDEBE6;
+  --white: #FFFFFF;
+  --stone: #E8E5DE;
+  --slate: #6B6878;
+  --mist: #8E8B9E;
+  --muted-dark: #C9C6D4;
+
+  --sage: #12A594;
+  --amber: #F0B429;
+  --ember: #FF6A45;
+
+  --hairline: #12121A12;
+  --hairline-strong: #12121A1A;
+
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  --display: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+  --body: 'Manrope', 'Segoe UI', system-ui, sans-serif;
+
+  --gutter: 96px;
+}
+
+@media (max-width: 1100px) { :root { --gutter: 56px; } }
+@media (max-width: 720px)  { :root { --gutter: 24px; } }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Body text never drops below 13px, per the type scale. */
+small, .fine { font-size: 13px; line-height: 1.5; }
+
+a { color: var(--iris); text-decoration: none; }
+a:hover { color: var(--ink); text-decoration: underline; }
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--iris);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 var(--gutter); }
+
+/* ------------------------------------------------------------------ header */
+
+.hero {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 72px 0 64px;
+  position: relative;
+  overflow: hidden;
+}
+
+/*
+ * The 80px graph-paper overlay from the identity cover. Kept at half opacity
+ * so it reads as texture rather than as a chart.
+ */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  background-image:
+    linear-gradient(#F6F5F210 1px, transparent 1px),
+    linear-gradient(90deg, #F6F5F210 1px, transparent 1px);
+  background-size: 80px 80px;
+  pointer-events: none;
+}
+
+.hero .wrap { position: relative; }
+
+.eyebrow {
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+
+.lockup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 40px 0 28px;
+}
+
+/*
+ * Height-led, width auto. The master symbol is 1336 x 1000 — aspect 1.336 —
+ * and forcing it into a square box is what letterboxes it. Height is set from
+ * cap height x 1.32, which is the lockup rule in the identity.
+ */
+.lockup img { display: block; flex: none; height: 52px; width: auto; }
+
+.wordmark {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 56px;
+  letter-spacing: -0.045em;
+  line-height: 1;
+  color: var(--paper);
+}
+
+.wordmark .d { color: var(--iris-light); }
+
+.hero h1 {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 40px;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
+  color: var(--paper);
+  max-width: 18ch;
+}
+
+.hero p.lede {
+  margin-top: 20px;
+  max-width: 62ch;
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--muted-dark);
+  text-wrap: pretty;
+}
+
+.stamp {
+  margin-top: 36px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 40px;
+  font-family: var(--display);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+
+.stamp b { color: var(--paper); font-weight: 500; letter-spacing: 0.14em; }
+
+@media (max-width: 720px) {
+  .hero { padding: 48px 0 44px; }
+  .wordmark { font-size: 40px; }
+  .lockup img { height: 38px; }
+  .hero h1 { font-size: 30px; }
+  .hero p.lede { font-size: 16px; }
+}
+
+/* -------------------------------------------------------------- navigation */
+
+.crumbs {
+  border-bottom: 1px solid var(--hairline);
+  background: var(--paper-deep);
+}
+
+.crumbs .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  font-family: var(--display);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+}
+
+.crumbs a { color: var(--slate); }
+.crumbs a:hover { color: var(--iris); text-decoration: none; }
+.crumbs a[aria-current='page'] { color: var(--ink); }
+
+/* ------------------------------------------------------------------ layout */
+
+main { padding: 64px 0 96px; }
+
+@media (max-width: 720px) { main { padding: 40px 0 64px; } }
+
+section + section { margin-top: 56px; }
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  border-bottom: 1px solid var(--hairline-strong);
+  padding-bottom: 16px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.section-head .num {
+  font-family: var(--display);
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: var(--iris);
+}
+
+.section-head h2 {
+  font-family: var(--display);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+@media (max-width: 720px) { .section-head h2 { font-size: 22px; } }
+
+p + p, p + ul, ul + p, p + .card, .card + .card, .card + p { margin-top: 16px; }
+
+ul { padding-left: 22px; }
+li + li { margin-top: 8px; }
+
+strong { font-weight: 700; }
+
+.muted { color: var(--slate); }
+
+/* ------------------------------------------------------------------- cards */
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+}
+
+@media (max-width: 720px) { .card { padding: 22px 20px; } }
+
+.card h3 {
+  font-family: var(--display);
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 10px;
+}
+
+.overline {
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mist);
+  display: block;
+  margin-bottom: 12px;
+}
+
+.grid { display: grid; gap: 20px; align-items: stretch; }
+.grid.two { grid-template-columns: 1fr 1fr; }
+.grid.three { grid-template-columns: repeat(3, 1fr); }
+
+/*
+ * Cards in a row stretch to the tallest of them, so a pill placed after a
+ * short paragraph floats mid-card while its neighbour's sits at the bottom.
+ * Column flex with an auto-margin on the last child lines them up on one
+ * baseline without hard-coding a height that the longest translation would
+ * then overflow.
+ */
+.grid > .card { display: flex; flex-direction: column; }
+.grid > .card > :last-child { margin-top: auto; }
+.grid > .card > p:last-child:not(:only-child) { padding-top: 14px; }
+
+@media (max-width: 860px) {
+  .grid.two, .grid.three { grid-template-columns: 1fr; }
+}
+
+/* The one dark card, used for the single most important statement on a page. */
+.card.ink {
+  background: var(--ink);
+  color: var(--muted-dark);
+  border-color: var(--ink);
+}
+.card.ink h3 { color: var(--paper); }
+.card.ink .overline { color: var(--iris-light); }
+.card.ink a { color: var(--iris-light); }
+.card.ink a:hover { color: var(--white); }
+
+/* ------------------------------------------------------------------ tables */
+
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  min-width: 560px;
+}
+
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+thead th {
+  font-family: var(--display);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mist);
+  border-bottom-color: var(--hairline-strong);
+}
+
+tbody tr:last-child td { border-bottom: none; }
+
+td:first-child { font-weight: 700; white-space: nowrap; }
+
+/* ------------------------------------------------------------------- pills */
+
+.pill {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-family: var(--display);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+/*
+ * Status colour never carries meaning alone — every pill has a word in it, and
+ * the light-theme text values are the deepened variants from the design system
+ * so they clear 4.5:1 on white.
+ */
+.pill.device { background: #12A5941F; color: #0C7A6D; }
+.pill.cloud  { background: #5B3DF51F; color: var(--iris-deep); }
+.pill.third  { background: #F0B4291F; color: #8A6100; }
+.pill.never  { background: #FF6A451F; color: #B93A18; }
+
+/* ------------------------------------------------------------------ footer */
+
+footer {
+  background: var(--ink);
+  color: var(--mist);
+  padding: 48px 0 56px;
+}
+
+footer .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px 48px;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+footer a { color: var(--iris-light); }
+footer a:hover { color: var(--paper); }
+
+footer .links { display: flex; flex-wrap: wrap; gap: 8px 28px; font-size: 14px; }
+
+/* -------------------------------------------------------------- call-outs */
+
+.callout {
+  border-left: 3px solid var(--iris);
+  padding: 4px 0 4px 20px;
+  color: var(--slate);
+}
+
+.toc {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 12px;
+  margin-top: 28px;
+}
+
+.toc a {
+  border: 1px solid var(--hairline-strong);
+  border-radius: 999px;
+  padding: 7px 16px;
+  font-size: 14px;
+  color: var(--slate);
+  background: var(--white);
+}
+
+.toc a:hover {
+  color: var(--iris);
+  border-color: var(--iris);
+  text-decoration: none;
+}
+
+/* Anchored headings must not slide under anything when jumped to. */
+section[id] { scroll-margin-top: 24px; }
+
+.updated {
+  font-family: var(--display);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--slate);
+}
